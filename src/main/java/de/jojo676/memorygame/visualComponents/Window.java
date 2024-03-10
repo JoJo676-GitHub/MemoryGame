@@ -1,14 +1,16 @@
 package de.jojo676.memorygame.visualComponents;
 
+import de.jojo676.memorygame.MemoryGame;
 import de.jojo676.memorygame.SoundEffects;
 import de.jojo676.memorygame.Values;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.concurrent.TimeUnit;
 
 public class Window extends JFrame {
 
-    private final ScorePanel scorePanel;
+    private ScorePanel scorePanel;
     private GameStartPanel gameStartPanel;
     private BackgroundPanel backgroundPanel;
     private SoundEffects soundEffects;
@@ -18,36 +20,47 @@ public class Window extends JFrame {
         return scorePanel;
     }
 
-    public SoundEffects getSoundEffects() {
+    public BackgroundPanel getBackgroundPanel() {
 
-        return soundEffects;
+        return backgroundPanel;
     }
 
     public Window() {
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setLayout(null);
-        setExtendedState(java.awt.Frame.MAXIMIZED_BOTH);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-//        setSize(screenSize);
-        setVisible(true);
+        setSize(screenSize);
+        getContentPane().setLayout(null);
         getContentPane().setBackground(new Color(50, 60, 76));
+    }
+
+    public void createComponents() {
 
         backgroundPanel = new BackgroundPanel(this);
         scorePanel = new ScorePanel(this);
         gameStartPanel = new GameStartPanel(this);
-        soundEffects = new SoundEffects();
+        soundEffects = MemoryGame.getMemoryGame().getSoundEffects();
         add(gameStartPanel);
-
+        setVisible(true);
         repaint();
     }
 
     public void startGame() {
+
+        int delay = 1;
         remove(gameStartPanel);
-        soundEffects.noteGameStart();
-        add(backgroundPanel);
-        add(scorePanel);
-        Values.run = true;
-        repaint();
+        if (Values.doStartMelody) {
+            soundEffects.noteGameStart();
+            delay = 3100;
+        }
+
+        Values.executor.schedule(() -> {
+            add(backgroundPanel);
+            add(scorePanel);
+            Values.run = true;
+            repaint();
+            Values.executor.schedule(() -> MemoryGame.getMemoryGame().getLogik().showNewTilesOrder(), 300, TimeUnit.MILLISECONDS);
+        }, delay, TimeUnit.MILLISECONDS);
     }
 }

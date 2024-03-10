@@ -20,6 +20,8 @@ public class GameStartPanel extends JTextField {
         setText("Start Memory Game");
         setFont(font);
         setBorder(null);
+        setEditable(false);
+        setFocusable(false);
         addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {

@@ -9,14 +9,15 @@ import java.util.concurrent.TimeUnit;
 
 public class Logik {
 
-    private final BackgroundPanel backgroundPanel;
+    private BackgroundPanel backgroundPanel;
 
-    public Logik(BackgroundPanel backgroundPanel) {
+    public Logik() {
 
-        this.backgroundPanel = backgroundPanel;
+    }
 
-        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-        executor.scheduleAtFixedRate(this::timedActions, 500, 1000, TimeUnit.MILLISECONDS);
+    public void initializeBackgroundPanel() {
+
+        backgroundPanel = MemoryGame.getMemoryGame().getWindow().getBackgroundPanel();
     }
 
     public void tileOrder() {
@@ -25,54 +26,78 @@ public class Logik {
         Values.tileOrder.add(nextTile);
     }
 
-    public void timedActions() {
-
-        backgroundPanel.colorTiles();
-    }
-
     public void checkTiles() {
 
         if (!Values.selectedTiles.isEmpty() && Values.selectedTiles.size() == Values.tileOrder.size()) {
 
+            //Trim to size in ein zweites Array
             if (Values.selectedTiles.equals(Values.tileOrder)) {
 
                 Values.waitForTileSelection = false;
                 Values.run = false;
                 Color color = backgroundPanel.getBackground();
-                backgroundPanel.setBackground(new Color(170, 252, 170, 255));
-
-                Values.score = Values.selectedTiles.size();
-                backgroundPanel.getWindow().getScorePanel().setText("Score: " + Values.score + "\n" +
-                        "Clicks left: " + (Values.tileOrder.size() + 1));
-                backgroundPanel.getWindow().getSoundEffects().noteWin();
-                try {
-                    Thread.sleep(300);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                backgroundPanel.setBackground(color);
-
+                Values.executor.schedule(() -> {
+                    backgroundPanel.setBackground(new Color(50, 180, 50, 255));
+                    Values.score = Values.selectedTiles.size();
+                    MemoryGame.getMemoryGame().getWindow().getScorePanel().refreshText();
+                    MemoryGame.getMemoryGame().getSoundEffects().noteWin(); //MemoryGame.getInstance statisch Variable
+                    Values.executor.schedule(() -> {
+                        backgroundPanel.setBackground(color);
+                        Values.run = true;
+                        Values.selectedTiles.clear();
+                        showNewTilesOrder();
+                    }, 300, TimeUnit.MILLISECONDS);
+                }, 800, TimeUnit.MILLISECONDS);
             } else {
                 backgroundPanel.setBackground(new Color(229, 38, 38));
                 Values.run = false;
-                backgroundPanel.showRestartPanel();
-                backgroundPanel.getWindow().getSoundEffects().noteFail();
+                Values.executor.schedule(() -> {
+                    backgroundPanel.showRestartPanel();
+                    MemoryGame.getMemoryGame().getSoundEffects().noteFail();
+                }, 310, TimeUnit.MILLISECONDS);
             }
 
             if (Values.score > Values.highScore) {
                 Values.highScore = Values.score;
             }
-            Values.selectedTiles.clear();
-            Values.run = true;
+        }
+    }
+
+    public void showNewTilesOrder() {
+
+        if (Values.run && !Values.waitForTileSelection) {
+            tileOrder();
+
+            ScheduledExecutorService executor2 = Executors.newSingleThreadScheduledExecutor();
+
+            executor2.scheduleAtFixedRate(new Runnable() {
+                int tileNr = 0;
+
+                @Override
+                public void run() {
+
+                    MemoryGame.getMemoryGame().getSoundEffects().playTileNote(Values.tileOrder.get(tileNr));
+                    System.out.println("aufruf");
+                    backgroundPanel.colorTiles(Values.tileOrder.get(tileNr));
+                    tileNr++;
+
+                    if (tileNr >= Values.tileOrder.size()) {
+                        executor2.shutdown();
+                        Values.waitForTileSelection = true;
+                    }
+                }
+            }, 0, 1000, TimeUnit.MILLISECONDS);
         }
     }
 
     public void restartGame() {
 
         backgroundPanel.restart();
+        Values.selectedTiles.clear();
         Values.tileOrder.clear();
         Values.score = 0;
         Values.waitForTileSelection = false;
         Values.run = true;
+        showNewTilesOrder();
     }
 }

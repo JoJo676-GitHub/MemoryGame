@@ -1,5 +1,6 @@
 package de.jojo676.memorygame.visualComponents;
 
+import de.jojo676.memorygame.MemoryGame;
 import de.jojo676.memorygame.Values;
 
 import javax.swing.*;
@@ -12,22 +13,19 @@ import java.util.concurrent.TimeUnit;
 
 public class MemoryTile extends JPanel {
 
-    private final MemoryTile tile;
+
     private final Color color;
-    private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-
-    public Color getColor() {
-
-        return color;
-    }
 
     public MemoryTile(int nr, BackgroundPanel backgroundPanel) {
 
-        tile = this;
-        int size = (backgroundPanel.getHeight() - 20) / Values.tilesPerLane;
+        Color colorClicked = new Color(37, 129, 192);
+
+        int size = backgroundPanel.getHeight() - 20;
+        size = size - (Values.tilesPerLane - 1) * 10;
+        size = size / Values.tilesPerLane;
 
         setLayout(null);
-        setBackground(new Color(nr * 6, 245 - ((Values.tilesPerLane * Values.tilesPerLane) - nr / 2) * 13, 12 * nr, 255));
+        setBackground(new Color(89, 181, 238));
         setSize(size, size);
         setVisible(true);
         color = getBackground();
@@ -42,19 +40,18 @@ public class MemoryTile extends JPanel {
 
                 if (Values.waitForTileSelection) {
 
-                    setBackground(new Color(176, 37, 37));
-                    setVisible(true);
-                    repaint();
-                    backgroundPanel.getWindow().getScorePanel().setText("Score: " + Values.score + "\n" +
-                            "Clicks left: " + ((Values.tileOrder.size() - Values.selectedTiles.size()) - 1));
+                    MemoryGame.getMemoryGame().getWindow().getScorePanel().refreshText();
 
-                    setBackground(new Color(color.getRed() / 2, color.getGreen() / 2, color.getBlue() / 2));
+                    setBackground(colorClicked);
 
-                    backgroundPanel.getWindow().getSoundEffects().playTileNote(nr);
+                    MemoryGame.getMemoryGame().getSoundEffects().playTileNote(nr);
 
                     executor.scheduleAtFixedRate(tile::undoColor, 300, 1000, TimeUnit.MILLISECONDS);
 
                     Values.selectedTiles.add(nr);
+                    if (Values.selectedTiles.size() == Values.tileOrder.size()) {
+                        MemoryGame.getMemoryGame().getLogik().checkTiles();
+                    }
                 }
             }
 
@@ -73,15 +70,5 @@ public class MemoryTile extends JPanel {
 
             }
         });
-    }
-
-    public void undoColor() {
-
-        setBackground(color);
-        try {
-            executor.awaitTermination(300, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 }

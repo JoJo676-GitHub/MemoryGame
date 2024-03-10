@@ -4,158 +4,83 @@ import javax.sound.midi.MidiChannel;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Synthesizer;
-import java.util.Arrays;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class SoundEffects {
 
-    private Synthesizer synthesizer;
-    private MidiChannel[] channels;
-    private final int[] tonleiter = {
-            59, //H
-            60, //C
-            62, //D
-            64, //E
-            65, //F
-            67, //G
-            69, //A
-            71, //H
-            72, //C
-            74, //D
-            76, //E
-            77, //F
-            79, //G
-            81, //A
-            83, //H
-            84, //C
-            86, //D
-            88, //E
-            89, //F
-            91, //G
-            93, //A
-            95, //H
-            96, //C
-    };
-
-    ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+    private final MidiChannel[] channels;
 
     public SoundEffects() {
 
         try {
-            synthesizer = MidiSystem.getSynthesizer();
+            Synthesizer synthesizer = MidiSystem.getSynthesizer();
             synthesizer.open();
             channels = synthesizer.getChannels();
             channels[1].programChange(98);// 79 normal mit hall, 30 start sound, 10: sehr beruhigend 98
             channels[2].programChange(30);
             channels[3].programChange(10);
         } catch (MidiUnavailableException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
     public void playTileNote(int nr) {
 
-        channels[1].noteOn(tonleiter[nr], 300);
+        int note = calculateTone(nr);
 
-        try {
-            Thread.sleep(300);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        Values.executor.execute(() -> channels[1].noteOn(note, 300));
 
-        channels[1].noteOff(tonleiter[nr], 50);
+        Values.executor.schedule(() -> channels[1].noteOff(note, 50), 300, TimeUnit.MILLISECONDS);
     }
 
     public void noteGameStart() {
 
         for (int i = 0; i < 3; i++) {
-            channels[2].noteOn(72, 300);
-            try {
-                Thread.sleep(700);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            channels[2].noteOff(72, 300);
+            Values.executor.schedule(() -> channels[2].noteOn(72, 300), 700 * i + 1, TimeUnit.MILLISECONDS);
+            Values.executor.schedule(()-> channels[2].noteOff(72, 300), 700 * (i+1), TimeUnit.MILLISECONDS);
         }
-        channels[2].noteOn(79, 300);
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        channels[2].noteOff(79, 300);
+        Values.executor.schedule(() -> channels[2].noteOn(79, 300), 2100, TimeUnit.MILLISECONDS);
+
+        Values.executor.schedule(() -> channels[2].noteOff(79, 300), 3100, TimeUnit.MILLISECONDS);
+
     }
 
     public void noteWin() {
 
         channels[3].noteOn(100, 300);
 
-//        executor.scheduleAtFixedRate(this::allNotesOff, 500, 10000, TimeUnit.MILLISECONDS);
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        channels[3].noteOff(100, 300);
+        Values.executor.schedule(() -> channels[3].noteOff(100, 300), 500, TimeUnit.MILLISECONDS);
     }
 
     public void noteFail() {
 
         channels[2].noteOn(52, 300);
 
-//        executor.scheduleAtFixedRate(this::allNotesOff, 300, 10000, TimeUnit.MILLISECONDS);
-        try {
-            Thread.sleep(300);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        Values.executor.schedule(() -> {
+            channels[2].noteOff(52, 50);
+            channels[2].noteOn(40, 300);
+        }, 300, TimeUnit.MILLISECONDS); //lambda; schöner, praktischer, Finntauglicher
 
-        channels[2].noteOff(52, 50);
-
-        channels[2].noteOn(40, 300);
-
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        channels[2].noteOff(40, 300);
+        Values.executor.schedule(() -> channels[2].noteOff(40, 300), 1300, TimeUnit.MILLISECONDS);
     }
 
-    public void allNotesOff() {
-        channels[1].allNotesOff();
-        channels[2].allNotesOff();
-        channels[3].allNotesOff();
-        try {
-            executor.awaitTermination(1000, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+    public int calculateTone(int nr) {
+
+        int firstNote = 48; //C
+        int note = nr % 7;
+        int finalNote;
+        int octave = nr / 7;
+        switch (note) {
+            case 0 -> finalNote = 0;
+            case 1 -> finalNote = 2;
+            case 2 -> finalNote = 4;
+            case 3 -> finalNote = 5;
+            case 4 -> finalNote = 7;
+            case 5 -> finalNote = 9;
+            case 6 -> finalNote = 11;
+            default -> finalNote = 1;
         }
-
-
-    }
-
-    public void playAllInstruments() {
-
-        for (int i = 0; i < 128; i++) {
-            System.out.println(i);
-            channels[2].programChange(i);
-            channels[2].noteOn(79, 300);
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            channels[2].noteOff(79);
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+        finalNote = (finalNote + 12 * octave) + firstNote;
+        return finalNote;
     }
 }

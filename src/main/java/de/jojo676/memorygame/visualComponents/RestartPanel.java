@@ -1,5 +1,6 @@
 package de.jojo676.memorygame.visualComponents;
 
+import de.jojo676.memorygame.MemoryGame;
 import de.jojo676.memorygame.Values;
 
 import javax.swing.*;
@@ -15,14 +16,14 @@ public class RestartPanel extends JTextArea {
 
         setLayout(null);
         setSize(600, 150);
-        setLocation((backgroundPanel.getWidth() - 600) / 2, (backgroundPanel.getHeight() - 150) /2);
+        setLocation((backgroundPanel.getWidth() - 600) / 2, (backgroundPanel.getHeight() - 150) / 2);
 
         setBackground(new Color(101, 131, 141));
         setVisible(true);
         setEditable(false);
         setFont(font);
         setForeground(new Color(65, 9, 9));
-        setBorder(BorderFactory.createLineBorder(new Color(0,0,0), 3));
+        setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0), 3));
         addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -31,7 +32,8 @@ public class RestartPanel extends JTextArea {
 
             @Override
             public void mousePressed(MouseEvent e) {
-                backgroundPanel.getLogik().restartGame();
+
+                MemoryGame.getMemoryGame().getLogik().restartGame();
             }
 
             @Override
@@ -53,17 +55,18 @@ public class RestartPanel extends JTextArea {
 
     public void setNewText() {
 
-        String text = "You failed \n" +
-                "Dein Score war " + Values.score;
+        StringBuilder stringBuilder = new StringBuilder("You failed \n" +
+                "Dein Score war");
+        stringBuilder.append(Values.score);
 
         if (Values.highScore == Values.score) {
-            text += "\nDies ist dein Highscore";
+            stringBuilder.append("\nDies ist dein Highscore");
         } else if (Values.highScore > Values.score) {
-            text += "\nNoch " + (Values.highScore - Values.score) + " bis du deinen Highscore erreicht hast";
+            stringBuilder.append(String.format("\nNoch %d bis du deinen Highscore erreicht hast", Values.highScore - Values.score));
         }
 
-        text += "\nKlicke hier um neu zu starten";
+        stringBuilder.append("\nKlicke hier um neu zu starten");
 
-        setText(text);
+        setText(stringBuilder.toString());
     }
 }

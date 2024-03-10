@@ -1,55 +1,44 @@
 package de.jojo676.memorygame.visualComponents;
 
 import de.jojo676.memorygame.Logik;
+import de.jojo676.memorygame.MemoryGame;
 import de.jojo676.memorygame.Values;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.Window;
+import java.util.concurrent.TimeUnit;
 
 public class BackgroundPanel extends JPanel {
 
-    private final MemoryTile[] memoryTiles = new MemoryTile[Values.tilesPerLane * Values.tilesPerLane];
-    private final Logik logik;
-    private final de.jojo676.memorygame.visualComponents.Window window;
+    private final MemoryTile[] memoryTiles = new MemoryTile[Values.tilesMax];
     private final RestartPanel restartPanel;
     private final Color color;
 
-    public de.jojo676.memorygame.visualComponents.Window getWindow() {
-
-        return window;
-    }
-
-    public Logik getLogik() {
-
-        return logik;
-    }
-
     public BackgroundPanel(Window window) {
 
-        this.window = window;
         setLayout(null);
         setBackground(new Color(101, 131, 141));
-        setSize(window.getHeight() - 70, window.getHeight() - 100);
-        setLocation((window.getWidth() - window.getHeight()) / 2 + 50, 25);
+        setSize(920, 920);
+        setLocation((window.getWidth() - getWidth()) / 2, 50);
         setVisible(true);
 
         color = getBackground();
-        logik = new Logik(this);
         restartPanel = new RestartPanel(this);
 
         addTiles();
+
+        MemoryGame.getMemoryGame().getLogik().showNewTilesOrder();
     }
 
     public void addTiles() {
-        
 
         int i = 0;
-        int size = (getHeight() - 20) / Values.tilesPerLane;
 
         for (int j = 0; j < Values.tilesPerLane; j++) {
             for (int k = 0; k < Values.tilesPerLane; k++) {
                 memoryTiles[i] = new MemoryTile(i, this);
-                memoryTiles[i].setLocation(10 * (k + 1) + (size * k), 10 * (j + 1) + (size * j));
+                memoryTiles[i].setLocation(10 * (k + 1) + (memoryTiles[i].getHeight() * k), 10 * (j + 1) + (memoryTiles[i].getHeight() * j));
                 add(memoryTiles[i]);
 
                 i++;
@@ -57,28 +46,12 @@ public class BackgroundPanel extends JPanel {
         }
     }
 
-    public void colorTiles() {
+    public void colorTiles(int tileNr) { //Methode soll nur felder färben, wird mit nem fixedRateScheduler aufgerufen, parallel die Musik
+        System.out.println("hi");
+        Color color = memoryTiles[tileNr].getBackground();
+        memoryTiles[tileNr].setBackground(new Color(232, 33, 33)); //Highlight Methode im Tile
 
-        Color color;
-
-        if (Values.run && !Values.waitForTileSelection) {
-            logik.tileOrder();
-            for (int tileNr : Values.tileOrder) { //färbt die Tiles der tileOrder nacheinander rot
-                color = memoryTiles[tileNr].getColor();
-                memoryTiles[tileNr].setBackground(new Color(232, 33, 33));
-                window.getSoundEffects().playTileNote(tileNr);
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                memoryTiles[tileNr].setBackground(color);
-            }
-            Values.waitForTileSelection = true;
-        } else if (Values.run) {
-            logik.checkTiles();
-
-        }
+        Values.executor.schedule(() -> memoryTiles[tileNr].setBackground(color), 900, TimeUnit.MILLISECONDS);
     }
 
     public void showRestartPanel() {

@@ -1,13 +1,10 @@
 package de.jojo676.memorygame;
 
-import de.jojo676.memorygame.visualComponents.Window;
-
 public class Main {
 
     public static void main(String[] args) {
-//        new SoundEffects().playAllInstruments();
-        Window window = new Window();
 
+        new MemoryGame();// Reset Button dauerhaft, klicks left counter weg, sobald man verkackt beenden
 
     }
 }
