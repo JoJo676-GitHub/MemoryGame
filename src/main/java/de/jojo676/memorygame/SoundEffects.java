@@ -47,7 +47,7 @@ public class SoundEffects {
 
     public void noteWin() {
 
-        channels[3].noteOn(100, 300);
+        Values.executor.execute(() -> channels[3].noteOn(100, 300));//führt die Methode sofort aus, nur ein Ding kann gleichzeitig gestartet werden
 
         Values.executor.schedule(() -> channels[3].noteOff(100, 300), 500, TimeUnit.MILLISECONDS);
     }

@@ -46,7 +46,7 @@ public class MemoryTile extends JPanel {
 
                     MemoryGame.getMemoryGame().getSoundEffects().playTileNote(nr);
 
-                    executor.scheduleAtFixedRate(tile::undoColor, 300, 1000, TimeUnit.MILLISECONDS);
+                    Values.executor.schedule(() -> setBackground(color), 300, TimeUnit.MILLISECONDS);//besser als threadSleep
 
                     Values.selectedTiles.add(nr);
                     if (Values.selectedTiles.size() == Values.tileOrder.size()) {

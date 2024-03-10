@@ -9,8 +9,8 @@ public class Values {
     public static int tilesPerLane = 4;//max 6
     public static ArrayList<Integer> tileOrder = new ArrayList<>();
     public static int tilesMax = tilesPerLane * tilesPerLane;
-    public static boolean run = false;
-    public static boolean waitForTileSelection = false;
+    public static volatile boolean run = false;//volatile setzt sofort im ram auf true/false
+    public static volatile boolean waitForTileSelection = false;
     public static ArrayList<Integer> selectedTiles = new ArrayList<>();
     public static ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
     public static int score = 0;
