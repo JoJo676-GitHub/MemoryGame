@@ -7,12 +7,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class MemoryTile extends JPanel {
-
 
     private final Color color;
 
@@ -49,9 +46,7 @@ public class MemoryTile extends JPanel {
                     Values.executor.schedule(() -> setBackground(color), 300, TimeUnit.MILLISECONDS);//besser als threadSleep
 
                     Values.selectedTiles.add(nr);
-                    if (Values.selectedTiles.size() == Values.tileOrder.size()) {
-                        MemoryGame.getMemoryGame().getLogik().checkTiles();
-                    }
+                    MemoryGame.getMemoryGame().getLogik().checkTiles();
                 }
             }
 

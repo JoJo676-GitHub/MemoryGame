@@ -8,22 +8,22 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-public class RestartPanel extends JTextArea {
+public class RestartPanel extends JButton {
 
     Font font = new Font("Calibri", Font.PLAIN, 30);
 
     public RestartPanel(BackgroundPanel backgroundPanel) {
 
-        setLayout(null);
-        setSize(600, 150);
-        setLocation((backgroundPanel.getWidth() - 600) / 2, (backgroundPanel.getHeight() - 150) / 2);
-
+        setLayout(new FlowLayout());
+        setSize(650, 210);
+        setLocation((backgroundPanel.getWidth() - getWidth()) / 2, (backgroundPanel.getHeight() - getHeight()) / 2);
+        setHorizontalTextPosition(SwingConstants.CENTER);
         setBackground(new Color(101, 131, 141));
         setVisible(true);
-        setEditable(false);
+//        setEditable(false);
         setFont(font);
         setForeground(new Color(65, 9, 9));
-        setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0), 3));
+        setBorder(BorderFactory.createLineBorder(new Color(229, 95, 38), 10));
         addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -55,17 +55,17 @@ public class RestartPanel extends JTextArea {
 
     public void setNewText() {
 
-        StringBuilder stringBuilder = new StringBuilder("You failed \n" +
-                "Dein Score war");
+        StringBuilder stringBuilder = new StringBuilder("<html>You failed <br>" +
+                "Dein Score war ");
         stringBuilder.append(Values.score);
 
         if (Values.highScore == Values.score) {
-            stringBuilder.append("\nDies ist dein Highscore");
+            stringBuilder.append("<br>Dies ist dein Highscore");
         } else if (Values.highScore > Values.score) {
-            stringBuilder.append(String.format("\nNoch %d bis du deinen Highscore erreicht hast", Values.highScore - Values.score));
+            stringBuilder.append(String.format("<br>Noch %d bis du deinen Highscore erreicht hast", Values.highScore - Values.score));
         }
 
-        stringBuilder.append("\nKlicke hier um neu zu starten");
+        stringBuilder.append("<br>Klicke hier um neu zu starten<html>");
 
         setText(stringBuilder.toString());
     }

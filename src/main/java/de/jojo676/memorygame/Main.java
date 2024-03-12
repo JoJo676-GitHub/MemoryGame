@@ -4,7 +4,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        new MemoryGame();// Reset Button dauerhaft, klicks left counter weg, sobald man verkackt beenden
+        new MemoryGame();//Highscore aus datei
 
     }
 }

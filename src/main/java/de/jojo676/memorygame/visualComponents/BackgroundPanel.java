@@ -19,8 +19,8 @@ public class BackgroundPanel extends JPanel {
 
         setLayout(null);
         setBackground(new Color(101, 131, 141));
-        setSize(920, 920);
-        setLocation((window.getWidth() - getWidth()) / 2, 50);
+        setSize(890, 890);
+        setLocation((window.getWidth() - getWidth()) / 2, 100);
         setVisible(true);
 
         color = getBackground();
@@ -47,11 +47,10 @@ public class BackgroundPanel extends JPanel {
     }
 
     public void colorTiles(int tileNr) { //Methode soll nur felder färben, wird mit nem fixedRateScheduler aufgerufen, parallel die Musik
-        System.out.println("hi");
         Color color = memoryTiles[tileNr].getBackground();
-        memoryTiles[tileNr].setBackground(new Color(232, 33, 33)); //Highlight Methode im Tile
+        memoryTiles[tileNr].setBackground(new Color(33, 232, 149)); //Highlight Methode im Tile
 
-        Values.executor.schedule(() -> memoryTiles[tileNr].setBackground(color), 900, TimeUnit.MILLISECONDS);
+        Values.executor.schedule(() -> memoryTiles[tileNr].setBackground(color), 750, TimeUnit.MILLISECONDS);
     }
 
     public void showRestartPanel() {

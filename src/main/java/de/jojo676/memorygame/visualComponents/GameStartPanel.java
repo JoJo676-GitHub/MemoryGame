@@ -5,22 +5,23 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-public class GameStartPanel extends JTextField {
+public class GameStartPanel extends JButton {
 
     public GameStartPanel(Window window) {
 
         Font font = new Font("Calibri", Font.PLAIN, 40);
 
         setLayout(null);
-        setBackground(new Color(26, 190, 190));
-        setSize(333, 200);
-
-        setLocation((window.getWidth() - 333)/2, (window.getHeight()-200)/2);
+        setBorder(null);
+        setBackground(new Color(234, 184, 19, 255));
+        setSize(400, 200);
+        setForeground(new Color(255, 255, 255));
+        setLocation((window.getWidth() - 400) / 2, (window.getHeight() - 200) / 2);
         setVisible(true);
         setText("Start Memory Game");
         setFont(font);
         setBorder(null);
-        setEditable(false);
+//        setEditable(false);
         setFocusable(false);
         addMouseListener(new MouseListener() {
             @Override
@@ -30,6 +31,7 @@ public class GameStartPanel extends JTextField {
 
             @Override
             public void mousePressed(MouseEvent e) {
+
                 window.startGame();
             }
 
@@ -49,5 +51,4 @@ public class GameStartPanel extends JTextField {
             }
         });
     }
-
 }
