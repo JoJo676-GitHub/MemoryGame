@@ -1,6 +1,5 @@
 package de.jojo676.memorygame.visualComponents;
 
-import de.jojo676.memorygame.Logik;
 import de.jojo676.memorygame.MemoryGame;
 import de.jojo676.memorygame.Values;
 
@@ -46,7 +45,8 @@ public class BackgroundPanel extends JPanel {
         }
     }
 
-    public void colorTiles(int tileNr) { //Methode soll nur felder färben, wird mit nem fixedRateScheduler aufgerufen, parallel die Musik
+    public void colorTiles(int tileNr) {
+
         Color color = memoryTiles[tileNr].getBackground();
         memoryTiles[tileNr].setBackground(new Color(33, 232, 149)); //Highlight Methode im Tile
 

@@ -20,7 +20,6 @@ public class RestartPanel extends JButton {
         setHorizontalTextPosition(SwingConstants.CENTER);
         setBackground(new Color(101, 131, 141));
         setVisible(true);
-//        setEditable(false);
         setFont(font);
         setForeground(new Color(65, 9, 9));
         setBorder(BorderFactory.createLineBorder(new Color(229, 95, 38), 10));
@@ -55,8 +54,7 @@ public class RestartPanel extends JButton {
 
     public void setNewText() {
 
-        StringBuilder stringBuilder = new StringBuilder("<html>You failed <br>" +
-                "Dein Score war ");
+        StringBuilder stringBuilder = new StringBuilder("<html>You failed <br>" + "Dein Score war ");
         stringBuilder.append(Values.score);
 
         if (Values.highScore == Values.score) {

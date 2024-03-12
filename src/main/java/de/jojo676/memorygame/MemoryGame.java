@@ -17,7 +17,6 @@ public class MemoryGame {
         logik = new Logik();
         window.createComponents();
         logik.initializeBackgroundPanel();
-
     }
 
     public static MemoryGame getMemoryGame() {

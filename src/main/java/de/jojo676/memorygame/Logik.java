@@ -81,7 +81,6 @@ public class Logik {
 
                     if (tileNr >= Values.tileOrder.size()) {
                         executor2.shutdown();
-//                        Values.waitForTileSelection = true;
                     }
                 }
             }, 0, 1000, TimeUnit.MILLISECONDS);

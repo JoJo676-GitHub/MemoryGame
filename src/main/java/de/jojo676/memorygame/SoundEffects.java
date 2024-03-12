@@ -59,7 +59,7 @@ public class SoundEffects {
         Values.executor.schedule(() -> {
             channels[2].noteOff(52, 50);
             channels[2].noteOn(40, 300);
-        }, 300, TimeUnit.MILLISECONDS); //lambda; schöner, praktischer, Finntauglicher
+        }, 300, TimeUnit.MILLISECONDS); //lambda; schöner, praktischer
 
         Values.executor.schedule(() -> channels[2].noteOff(40, 300), 1300, TimeUnit.MILLISECONDS);
     }

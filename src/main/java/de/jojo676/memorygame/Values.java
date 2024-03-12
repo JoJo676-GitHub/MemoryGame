@@ -6,7 +6,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 public class Values {
 
-    public static int tilesPerLane = 4;//max 6
+    public static int tilesPerLane = 4;
     public static ArrayList<Integer> tileOrder = new ArrayList<>();
     public static int tilesMax = tilesPerLane * tilesPerLane;
     public static volatile boolean run = false;//volatile setzt sofort im ram auf true/false

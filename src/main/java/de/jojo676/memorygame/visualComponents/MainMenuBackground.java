@@ -23,7 +23,7 @@ public class MainMenuBackground extends JPanel {
                 for (int y = 0; y < 1080; y++) {
 
                     g2d.setPaint(new Color((int) (y * 0.2), (int) (y * 0.1), (int) (x * 0.1)));
-                    g2d.fillRect(x * 1, y * 1, 1, 1);
+                    g2d.fillRect(x, y, 1, 1);
                 }
             }
         }

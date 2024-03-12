@@ -6,8 +6,6 @@ import de.jojo676.memorygame.Values;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
 
 public class Window extends JFrame {
@@ -38,7 +36,6 @@ public class Window extends JFrame {
         getContentPane().setLayout(null);
         getContentPane().setBackground(new Color(50, 60, 76));
         setIconImage(new ImageIcon("src/main/resources/img.png").getImage());
-
     }
 
     public void createComponents() {
